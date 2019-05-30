@@ -1,0 +1,113 @@
+.container {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  width: 660px;
+  height: 110px;
+  white-space: nowrap;
+  margin: 10px;
+}
+.recording{
+  display:inline-block;
+  padding:10px;
+  border-radius: 25%;
+  border:2px solid black;
+}
+.keyboard {
+  width: auto;
+  padding: 0;
+  margin: 0;
+}
+
+.key {
+  width:30px;
+  cursor: pointer;
+  font: 16px "Open Sans", "Lucida Grande", "Arial", sans-serif;
+  border: 1px solid black;
+  border-radius: 5px;
+  height: 80px;
+  text-align: center;
+  box-shadow: 2px 2px darkgray;
+  display: inline-block;
+  position: relative;
+  margin-right: 3px;
+  user-select: none;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+.black{
+  position:absolute;
+  top:0;
+  margin-left:-10px;
+  height:40px;
+  background-color:black;
+  color:white;
+  z-index: 1
+}
+
+.key div {
+  position: absolute;
+  bottom:0;
+  text-align: center;
+  width: 100%;
+  pointer-events: none;
+}
+
+.key div sub {
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.key:hover {
+  background-color: #eef;
+}
+
+.active {
+  background-color: red;
+  color: #fff;
+}
+
+.octave {
+  display: inline-block;
+  padding: 0 6px 0 0;
+}
+
+.settingsBar {
+  padding-top: 8px;
+  font: 14px "Open Sans", "Lucida Grande", "Arial", sans-serif;
+  position: relative;
+  vertical-align: middle;
+  width: 100%;
+  height: 30px;
+}
+
+.left {
+  width: 50%;
+  position: absolute;
+  left: 0;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.left span, .left input {
+  vertical-align: middle;
+}
+
+.right {
+  width: 50%;
+  position: absolute;
+  right: 0;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.right span {
+  vertical-align: middle;
+}
+
+.right input {
+  vertical-align: baseline;
+}
+.no-click{
+  pointer-events: none;
+}
