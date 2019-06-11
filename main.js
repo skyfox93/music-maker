@@ -1,8 +1,7 @@
 let audioContext = new (window.AudioContext || window.webkitAudioContext);
 
 let oscList = [];
-let octave=3;
-let keyTable=genKeyTable(octave);
+let currOctave=3;
 let noteFreq = createNoteTable();
 let bps=1.5// beatperSecond
 let recordings=[];
@@ -14,29 +13,55 @@ let nowRecording=false;
 let loopLength=4 // in beats
 let hornTable = audioContext.createPeriodicWave(wave.real, wave.imag);
 
-function genKeyTable(octave){
+function noteFromKey(key){
    const keyTable= {
-    "a":`${octave}C`,
-    "w":`${octave}C#`,
-    "s":`${octave}D`,
-    "e":`${octave}D#`,
-    "d":`${octave}E`,
-    "f":`${octave}F`,
-    "t":`${octave}F#`,
-    "g":`${octave}G`,
-    "y": `${octave}G#`,
-    "h": `${octave}A`,
-    "u": `${octave}A#`,
-    "j": `${octave}B`,
-    "k": `${octave+1}C`,
-    "o": `${octave+1}C#`,
-    "l":`${octave+1}D`,
-    "p":`${octave+1}D#`,
-    ";":`${octave+1}E`,
-    "'":`${octave+1}F`
+    "a":`${currOctave}C`,
+    "w":`${currOctave}C#`,
+    "s":`${currOctave}D`,
+    "e":`${currOctave}D#`,
+    "d":`${currOctave}E`,
+    "f":`${currOctave}F`,
+    "t":`${currOctave}F#`,
+    "g":`${currOctave}G`,
+    "y": `${currOctave}G#`,
+    "h": `${currOctave}A`,
+    "u": `${currOctave}A#`,
+    "j": `${currOctave}B`,
+    "k": `${currOctave+1}C`,
+    "o": `${currOctave+1}C#`,
+    "l":`${currOctave+1}D`,
+    "p":`${currOctave+1}D#`,
+    ";":`${currOctave+1}E`,
+    "'":`${currOctave+1}F`
   }
-  return keyTable
+  return keyTable[key]
 }
+
+  function keyFromNote(note){
+     const keyTable= {
+      [`${currOctave}C`]:"a",
+      [`${currOctave}C#`]:"w",
+      [`${currOctave}D`]:"s",
+      [`${currOctave}D#`]:"e",
+      [`${currOctave}E`]:"d",
+      [`${currOctave}F`]:"f",
+      [`${currOctave}F#`]:"t",
+      [`${currOctave}G`]:"g",
+       [`${currOctave}G#`]:"y",
+      [`${currOctave}A`]:"h",
+       [`${currOctave}A#`]:"u",
+       [`${currOctave}B`]:"j",
+       [`${currOctave+1}C`]:"k",
+       [`${currOctave+1}C#`]:"o",
+      [`${currOctave+1}D`]:"l",
+      [`${currOctave+1}D#`]:"p",
+      [`${currOctave+1}E`]:";",
+      [`${currOctave+1}F`]:"'"
+    }
+    return (keyTable[note])
+}
+
+
 function noteToFreq(note,noteFreq){
     return noteFreq[note[0]][note.slice(1)]
   }
@@ -52,26 +77,11 @@ let cosineTerms = null;
 let loopStart=null
 function createNoteTable() {
 
-  let noteFreq = [];
-  for (let i=0; i< 9; i++) {
+  let noteFreq = {};
+  for (let i=2; i<5; i++) {
     noteFreq[i] = {};
   }
-    noteFreq[0]["A"] = 27.500000000000000;
-    noteFreq[0]["A#"] = 29.135235094880619;
-    noteFreq[0]["B"] = 30.867706328507756;
 
-    noteFreq[1]["C"] = 32.703195662574829;
-    noteFreq[1]["C#"] = 34.647828872109012;
-    noteFreq[1]["D"] = 36.708095989675945;
-    noteFreq[1]["D#"] = 38.890872965260113;
-    noteFreq[1]["E"] = 41.203444614108741;
-    noteFreq[1]["F"] = 43.653528929125485;
-    noteFreq[1]["F#"] = 46.249302838954299;
-    noteFreq[1]["G"] = 48.999429497718661;
-    noteFreq[1]["G#"] = 51.913087197493142;
-    noteFreq[1]["A"] = 55.000000000000000;
-    noteFreq[1]["A#"] = 58.270470189761239;
-    noteFreq[1]["B"] = 61.735412657015513;
     noteFreq[2]["C"] = 65.406391325149658;
     noteFreq[2]["C#"] = 69.295657744218024;
     noteFreq[2]["D"] = 73.416191979351890;
@@ -104,52 +114,7 @@ function createNoteTable() {
     noteFreq[4]["D#"] = 311.126983722080910;
     noteFreq[4]["E"] = 329.627556912869929;
     noteFreq[4]["F"] = 349.228231433003884;
-    noteFreq[4]["F#"] = 369.994422711634398;
-    noteFreq[4]["G"] = 391.995435981749294;
-    noteFreq[4]["G#"] = 415.304697579945138;
-    noteFreq[4]["A"] = 440.000000000000000;
-    noteFreq[4]["A#"] = 466.163761518089916;
-    noteFreq[4]["B"] = 493.883301256124111;
 
-    noteFreq[5]["C"] = 523.251130601197269;
-    noteFreq[5]["C#"] = 554.365261953744192;
-    noteFreq[5]["D"] = 587.329535834815120;
-    noteFreq[5]["D#"] = 622.253967444161821;
-    noteFreq[5]["E"] = 659.255113825739859;
-    noteFreq[5]["F"] = 698.456462866007768;
-    noteFreq[5]["F#"] = 739.988845423268797;
-    noteFreq[5]["G"] = 783.990871963498588;
-    noteFreq[5]["G#"] = 830.609395159890277;
-    noteFreq[5]["A"] = 880.000000000000000;
-    noteFreq[5]["A#"] = 932.327523036179832;
-    noteFreq[5]["B"] = 987.766602512248223;
-
-    noteFreq[6]["C"] = 1046.502261202394538;
-    noteFreq[6]["C#"] = 1108.730523907488384;
-    noteFreq[6]["D"] = 1174.659071669630241;
-    noteFreq[6]["D#"] = 1244.507934888323642;
-    noteFreq[6]["E"] = 1318.510227651479718;
-    noteFreq[6]["F"] = 1396.912925732015537;
-    noteFreq[6]["F#"] = 1479.977690846537595;
-    noteFreq[6]["G"] = 1567.981743926997176;
-    noteFreq[6]["G#"] = 1661.218790319780554;
-    noteFreq[6]["A"] = 1760.000000000000000;
-    noteFreq[6]["A#"] = 1864.655046072359665;
-    noteFreq[6]["B"] = 1975.533205024496447;
-    noteFreq[7]["C"] = 2093.004522404789077;
-    noteFreq[7]["C#"] = 2217.461047814976769;
-    noteFreq[7]["D"] = 2349.318143339260482;
-    noteFreq[7]["D#"] = 2489.015869776647285;
-    noteFreq[7]["E"] = 2637.020455302959437;
-    noteFreq[7]["F"] = 2793.825851464031075;
-    noteFreq[7]["F#"] = 2959.955381693075191;
-    noteFreq[7]["G"] = 3135.963487853994352;
-    noteFreq[7]["G#"] = 3322.437580639561108;
-    noteFreq[7]["A"] = 3520.000000000000000;
-    noteFreq[7]["A#"] = 3729.310092144719331;
-    noteFreq[7]["B"] = 3951.066410048992894;
-
-    noteFreq[8]["C"] = 4186.009044809578154;
   return noteFreq;
 }
 
@@ -164,12 +129,12 @@ function renderKeyBoard(noteFreq,octave){
   keyboard.innerHTML=""
   let octaveElem = document.createElement("div");
   octaveElem.className = "octave";
-  for (var key in keyTable){
-      let noteid=keyTable[key]
-      console.log (noteid)
-      let note=noteid.slice(1)
-      let octave=noteid[0]
-      let freq=noteToFreq(noteid,noteFreq)
+  for (var octave in noteFreq) {
+   let noteList = noteFreq[octave];
+   for (let note in noteList){
+      let noteid=octave+note
+      let freq=noteList[note]
+      let key=(octave==currOctave ? keyFromNote(noteid) : null)
     if (noteid.length == 2) {
       octaveElem.appendChild(createKey(note, octave, freq ,key, false));
     }
@@ -177,6 +142,8 @@ function renderKeyBoard(noteFreq,octave){
       octaveElem.appendChild(createKey(note, octave, freq,key,true));
     }
   }
+
+}
   keyboard.appendChild(octaveElem);
 }
 
@@ -197,7 +164,7 @@ function setup() {
 }
 
 setup();
-function createKey(note, octave, freq, key,black=false) {
+function createKey(note, octave, freq, key=null,black=false) {
   let keyElement = document.createElement("div");
   let labelElement = document.createElement("div");
 
@@ -210,7 +177,7 @@ function createKey(note, octave, freq, key,black=false) {
   keyElement.dataset["noteid"]=octave+note
 
 
-  labelElement.innerHTML = note + '<sub>' + key + '</sub>';
+  labelElement.innerHTML = note + '<sub>' + (key||'') + '</sub>';
 
   keyElement.appendChild(labelElement);
 
@@ -265,7 +232,7 @@ function notePressed(event) {
 
 
 function keyPlay(event){
-      let note=keyTable[event.key]
+      let note=noteFromKey(event.key)
       if(note){
         let freq=noteToFreq(note,noteFreq)
         if (!oscList[note]) {
@@ -286,7 +253,7 @@ function keyPlay(event){
 
   function keyRelease(event){
     // when a key is released, if no note is playing, a rest begins.
-      let note=keyTable[event.key]
+      let note=noteFromKey(event.key)
       if(note){
         let freq=noteToFreq(note,noteFreq)
 
@@ -374,7 +341,6 @@ function handleRecordingClick(e){
 }
 }
 function handleNumKey(e){
-  console.log(event.key)
   switch(event.key){
     case "1":
     case "2":
@@ -388,14 +354,13 @@ function handleNumKey(e){
     if(recordings[parseInt(event.key)-1]){playRecording(parseInt(event.key)-1)}
       break
     case "c":
-        octave-=1
-        keyTable=genKeyTable(octave)
-        renderKeyBoard(noteFreq,octave)
+        currOctave-=1
+
+        renderKeyBoard(noteFreq)
         break
     case "v":
-      octave+=1;
-      keyTable=genKeyTable(octave)
-      renderKeyBoard(noteFreq,octave)
+      currOctave+=1;
+      renderKeyBoard(noteFreq)
 
       break
   }
