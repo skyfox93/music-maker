@@ -185,3 +185,7 @@
       transform: rotateX(50deg);
   }
 }
+
+.settings-bar{
+  display: flex; flex-wrap: wrap;
+}

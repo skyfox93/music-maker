@@ -4,31 +4,36 @@
 
 </head>
 <body>
-<div class="container">
-  <div class="keyboard"></div>
-</div>
-<div id="loop-container"></div>
-<div class="settingsBar">
-  <div class="left">
-    <span>Volume: </span>
-    <input type="range" min="0.0" max="1.0" step="0.01"
-        value="0.5" list="volumes" name="volume">
-    <datalist id="volumes">
-      <option value="0.0" label="Mute">
-      <option value="1.0" label="100%">
-    </datalist>
+  <div tips>
+    Play using your keyboard.
+    Use C and V to change the ocatave.
+
   </div>
-  <div class="right">
-    <span>Current waveform: </span>
-    <select name="waveform">
-      <option value="sine">Sine</option>
-      <option value="square">Square</option>
-      <option value="sawtooth">Sawtooth</option>
-      <option value="triangle">Triangle</option>
-      <option value="custom" selected>Custom</option>
-    </select>
+  <div class="settingsBar">
+    <div class="left">
+      <span>Volume: </span>
+      <input type="range" min="0.0" max="1.0" step="0.01"
+          value="0.5" list="volumes" name="volume">
+      <datalist id="volumes">
+        <option value="0.0" label="Mute">
+        <option value="1.0" label="100%">
+      </datalist>
+    </div>
+    <div class="right">
+      <span>Current waveform: </span>
+      <select name="waveform">
+        <option value="sine">Sine</option>
+        <option value="square">Square</option>
+        <option value="sawtooth">Sawtooth</option>
+        <option value="triangle">Triangle</option>
+        <option value="custom" selected>Custom</option>
+      </select>
+    </div>
   </div>
-</div>
-<script src="./wave.js"> </script>
-<script src="./main.js"> </script>
+  <div class="container">
+    <div class="keyboard"></div>
+  </div>
+  <div id="loop-container"></div>
+  <script src="./wave.js"> </script>
+  <script src="./main.js"> </script>
 </body>
