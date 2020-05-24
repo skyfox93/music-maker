@@ -1,8 +1,8 @@
 let audioContext = new (window.AudioContext || window.webkitAudioContext);
 
 let oscList = [];
-let octave=3;
-let keyTable=genKeyTable(octave);
+let currentOctave=3;
+let keyTable=genKeyTable(currentOctave);
 let noteFreq = createNoteTable();
 let bps=1.5// beatperSecond
 let recordings=[];
@@ -153,31 +153,31 @@ function createNoteTable() {
   return noteFreq;
 }
 
-if (!Object.entries) {
-    Object.entries = function entries(O) {
-        return reduce(keys(O), (e, k) => concat(e, typeof k === 'string' && isEnumerable(O, k) ? [[k, O[k]]] : []), []);
-    };
-}
 
 
-function renderKeyBoard(noteFreq,octave){
+
+function renderKeyBoard(noteFreq,currentOctave){
   keyboard.innerHTML=""
-  let octaveElem = document.createElement("div");
-  octaveElem.className = "octave";
-  for (var key in keyTable){
-      let noteid=keyTable[key]
-      console.log (noteid)
-      let note=noteid.slice(1)
-      let octave=noteid[0]
-      let freq=noteToFreq(noteid,noteFreq)
-    if (noteid.length == 2) {
-      octaveElem.appendChild(createKey(note, octave, freq ,key, false));
-    }
-    if (noteid.length == 3) {
-      octaveElem.appendChild(createKey(note, octave, freq,key,true));
-    }
+  for (var octave in noteFreq){
+    let octaveElem = document.createElement("div");
+    console.log(octave, currentOctave)
+        mapNoteToKey= Object.fromEntries(Object.entries(keyTable).map(entry => ([entry[1], entry[0]])))
+       console.log(mapNoteToKey)
+        octaveElem.className = "octave "+ "octave"+octave;
+      for( let note in noteFreq[octave]){
+        let noteid=octave+note
+        console.log(noteid)
+        let key = mapNoteToKey[noteid]
+        let freq=noteToFreq(noteid,noteFreq)
+        if (noteid.length == 2) {
+          octaveElem.appendChild(createKey(note, octave, freq ,key, false));
+        }
+        if (noteid.length == 3) {
+          octaveElem.appendChild(createKey(note, octave, freq,key,true));
+        }
+      }
+    keyboard.appendChild(octaveElem);
   }
-  keyboard.appendChild(octaveElem);
 }
 
 function setup() {
@@ -186,7 +186,10 @@ function setup() {
   masterGainNode = audioContext.createGain();
   masterGainNode.connect(audioContext.destination);
   masterGainNode.gain.value = volumeControl.value;
-  renderKeyBoard(noteFreq)
+  keyTable=genKeyTable(currentOctave)
+  renderKeyBoard(noteFreq, currentOctave)
+  document.querySelector('.octave'+currentOctave).scrollIntoView({behavior:"smooth",inline: "center"})
+
   // Create the keys; skip any that are sharp or flat; for
   // our purposes we don't need them. Each octave is inserted
   // into a <div> of class "octave".
@@ -203,15 +206,21 @@ function createKey(note, octave, freq, key,black=false) {
 
   keyElement.className = "key";
   if(black){keyElement.className = "key black";}
+  else{
+    keyElement.className= "key white";
+  }
 
   keyElement.dataset["octave"] = octave;
   keyElement.dataset["note"] = note;
   keyElement.dataset["frequency"] = freq;
   keyElement.dataset["noteid"]=octave+note
 
-
-  labelElement.innerHTML = note + '<sub>' + key + '</sub>';
-
+  if(key){
+    labelElement.innerHTML = key + '<sub>' + note + '</sub>';
+  }
+  else{
+    keyElement.classList.add('inactive');
+  }
   keyElement.appendChild(labelElement);
 
   keyElement.addEventListener("mousedown", notePressed, false);
@@ -388,14 +397,18 @@ function handleNumKey(e){
     if(recordings[parseInt(event.key)-1]){playRecording(parseInt(event.key)-1)}
       break
     case "c":
-        octave-=1
-        keyTable=genKeyTable(octave)
-        renderKeyBoard(noteFreq,octave)
+        currentOctave-=1
+        document.querySelector('.octave'+currentOctave).scrollIntoView({behavior:"smooth",inline: "center"})
+
+        keyTable=genKeyTable(currentOctave)
+        renderKeyBoard(noteFreq,currentOctave)
         break
     case "v":
-      octave+=1;
-      keyTable=genKeyTable(octave)
-      renderKeyBoard(noteFreq,octave)
+      currentOctave+=1;
+      document.querySelector('.octave'+currentOctave).scrollIntoView({behavior:"smooth",inline: "center"})
+
+      keyTable=genKeyTable(currentOctave)
+      renderKeyBoard(noteFreq,currentOctave)
 
       break
   }
